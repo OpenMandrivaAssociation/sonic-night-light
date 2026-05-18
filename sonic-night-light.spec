@@ -4,6 +4,9 @@
 %define gitbranch Plasma/6.0
 %define gitbranchd %(echo %{gitbranch} |sed -e "s,/,-,g")
 
+%define libname %mklibname SonicDENightLight
+%define devname %mklibname SonicDENightLight -d
+
 Summary: Library for scheduling the dark-light cycle
 Name: sonic-night-light
 Version: 6.6.5
@@ -41,8 +44,24 @@ Conflicts:      knighttime
 %description
 Library for scheduling the dark-light cycle
 
+%package -n %libname
+Summary: Library for %name
+Requires: %name = %{EVRD}
+Conflicts: %{_lib}KNightTime
+
+%description -n %libname
+%summary
+
+%package -n %devname
+Summary: Development files for %name
+Requires: %libname = %{EVRD}
+Conflicts: %{_lib}KNightTime-devel
+
+%description -n %devname
+%summary
+
 %install -a
-%libpackages
+rm -rf %{buildroot}/%{_libdir}/cmake
 
 %files
 %{_libdir}/libexec/knighttimed
@@ -50,4 +69,14 @@ Library for scheduling the dark-light cycle
 %{_datadir}/dbus-1/interfaces/org.kde.NightTime.xml
 %{_datadir}/dbus-1/services/org.kde.NightTime.service
 %{_datadir}/qlogging-categories6/knighttime.categories
-%{_prefix}/lib/systemd/user/plasma-knighttimed.service
+%{_userunitdir}/plasma-knighttimed.service
+
+%files -n %libname
+%{_libdir}/libKNightTime.*
+
+
+%files -n %devname
+# pending rename
+# %{_libdir}/cmake/KNightTime/*.cmake
+
+%{_includedir}/KNightTime/*
